@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { useState } from 'react'
+import { React, useState } from 'react'
 import { styled } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Button from '@mui/material/Button';
@@ -29,7 +29,7 @@ const columns: GridColDef[] = [
 
 export default function Home() {
   const [data, setData] = useState<GridRowsProp>([])
-  const handleFileChange = async (e: Event) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target!=null) {
       const targetFiles = (e.target as HTMLInputElement).files
       const formData = new FormData();
