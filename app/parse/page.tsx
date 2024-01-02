@@ -36,7 +36,7 @@ export default function Home() {
       Array.from(targetFiles?targetFiles:[]).forEach(file => {
         formData.append('file_list', file);
       })
-      await axios.post('http://192.168.0.13:8000/parse', formData, {headers:{
+      await axios.post('https://ffxiv-log-parser-api.onrender.com/parse', formData, {headers:{
         'Accept': 'application/json',
         'Content-Type': 'multipart/form-data'
       }}).then(response => {
