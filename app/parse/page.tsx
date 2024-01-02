@@ -29,7 +29,7 @@ const columns: GridColDef[] = [
 
 export default function Home() {
   const [data, setData] = useState<GridRowsProp>([])
-  const handleFileChange = async (e) => {
+  const handleFileChange = async (e: Event) => {
     const formData = new FormData();
     Array.from(e.target.files).forEach(file => {
       formData.append('file_list', file);
