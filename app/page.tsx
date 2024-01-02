@@ -1,95 +1,66 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+"use client";
+
+import axios from "axios";
+import { useState } from 'react'
+import { styled } from '@mui/material/styles';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import { DataGrid, GridRowsProp, GridColDef, GridToolbar } from '@mui/x-data-grid';
+
+
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
+
+const columns: GridColDef[] = [
+  { field: 'datetime', headerName: 'Time', type: 'dateTime', width: 200, valueGetter: ({ value }) => value && new Date(value), },
+  { field: 'sender', headerName: 'Sender', width: 200 },
+  { field: 'message', headerName: 'Message', flex: 1 },
+];
 
 export default function Home() {
+  const [data, setData] = useState<GridRowsProp>([])
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target!=null) {
+      const targetFiles = (e.target as HTMLInputElement).files
+      const formData = new FormData();
+      Array.from(targetFiles?targetFiles:[]).forEach(file => {
+        formData.append('file_list', file);
+      })
+      await axios.post('https://ffxiv-log-parser-api.onrender.com/parse', formData, {headers:{
+        'Accept': 'application/json',
+        'Content-Type': 'multipart/form-data'
+      }}).then(response => {
+        console.log(response)
+        setData(response.data)
+      })
+    }
+  }
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+    <div>
+      <h2>FFXIVログパーサー</h2>
+      <Box sx={{ my: 4 }}>
+        <Button component="label" variant="contained" startIcon={<CloudUploadIcon />}>
+          Upload files
+          <VisuallyHiddenInput type="file" multiple onChange={handleFileChange}/>
+        </Button>
+      </Box>
+      {
+        data.length ? 
+        <div style={{ height: 300, width: '100%' }}>
+          <DataGrid rows={data} columns={columns} autoHeight rowHeight={25} slots={{ toolbar: GridToolbar }} />
+        </div> : 
+        <></>
+      }
+    </div>
+  );
 }
