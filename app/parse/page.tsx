@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { React, useState } from 'react'
+import { useState } from 'react'
 import { styled } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Button from '@mui/material/Button';
