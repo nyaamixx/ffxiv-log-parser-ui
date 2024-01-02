@@ -30,20 +30,21 @@ const columns: GridColDef[] = [
 export default function Home() {
   const [data, setData] = useState<GridRowsProp>([])
   const handleFileChange = async (e: Event) => {
-    const formData = new FormData();
-    Array.from(e.target.files).forEach(file => {
-      formData.append('file_list', file);
-    })
-    await axios.post('http://192.168.0.13:8000/parse', formData, {headers:{
-      'Accept': 'application/json',
-      'Content-Type': 'multipart/form-data'
-    }}).then(response => {
-      console.log(response)
-      setData(response.data)
-    })
-    console.log('AAAA')
+    if (e.target!=null) {
+      const targetFiles = (e.target as HTMLInputElement).files
+      const formData = new FormData();
+      Array.from(targetFiles?targetFiles:[]).forEach(file => {
+        formData.append('file_list', file);
+      })
+      await axios.post('http://192.168.0.13:8000/parse', formData, {headers:{
+        'Accept': 'application/json',
+        'Content-Type': 'multipart/form-data'
+      }}).then(response => {
+        console.log(response)
+        setData(response.data)
+      })
+    }
   }
-  console.log('data', data)
   return (
     <div>
       <h2>FFXIVログパーサー</h2>
